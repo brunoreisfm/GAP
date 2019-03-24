@@ -56,3 +56,42 @@ Where d is the primitive element for Z(p) with p as a prime.
     slp:=ProductOfStraightLinePrograms(Decompose2(m3),slp);
     
   And hence, we can conclude that our result is the product of those 3 slp's, that actually will calculate the same function "Decompose2" for m1,m2 and m3, which are upper and lower triangular matrices, that are covered in 1st and 2nd case.
+
+
+4th Case) General Matrix with b == 0. The d here in the matrix entries is different from the d := Z(p)
+
+  a b
+  c d
+  
+  First we'll multiply the general matrix by the first standard generator S: m := S * m. We can see what happens in that multiplication in the link below:
+  https://matrixcalc.org/en/#%7B%7Ba,b%7D,%7Bc,d%7D%7D%2A%7B%7B0,1%7D,%7B-1,0%7D%7D
+  
+  After that we compute two slp's and get their product:
+  
+  slp_1 = Decompose2(m)
+  slp_2 = Decompose2(Inverse(S))
+  
+  slp:=ProductOfStraightLinePrograms(slp_1,slp_2);
+  
+  Clearly, after m := S * m we'll probably get a new matrix with b!=0, and therefore we apply 3rd case. 
+  
+  Is it possible to not get into 3rd case?
+  
+  No, because m:= S * m would return:
+  
+  -b a
+  -d c
+  
+  And since we're dealing with matrices in SL(2,p), their determinant is equal to one, therefore: 
+    (-b)(c) - (-d)(a) = 1
+    - (-d)(a) = 1 // Because b = 0
+    (d)(a) = 1 => a != 0 // Falls into 3rd case.
+    
+  The slp_2 is needed because we need to get back to the a b c d format of the matrix.
+    
+  
+  
+  
+  
+  
+  
