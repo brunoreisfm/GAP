@@ -1,0 +1,58 @@
+All SLP's get the 3 generators:
+
+  S  [[0,1],[-1,0]]
+  T  [[1,1],[0,1]]
+  D  [[d,0],[0,d^-1]]
+
+Where d is the primitive element for Z(p) with p as a prime.
+
+
+1st Case) Upper Triangular Matrices:
+
+  1 n
+  0 1
+
+  The SLP will simply get the T and raise to n.
+  
+  
+2nd Case) Lower Triangular Matrices:
+
+  1 0
+  n 1
+  
+  The SLP will do the following: S^-1 * T^-n * D. Here's an example of this matrix multiplication where n = 5:
+  https://matrixcalc.org/en/#%7B%7B0,1%7D,%7B-1,0%7D%7D%5E%28-1%29%2A%7B%7B1,1%7D,%7B0,1%7D%7D%5E%28-3%29%2A%7B%7B0,1%7D,%7B-1,0%7D%7D
+  
+  
+3rd Case) General Matrix with b != 0. The d here in the matrix entries is different from the d := Z(p)
+
+  a b
+  c d
+  
+  First we define 3 matrices:
+  
+  m3)
+    1           0
+    c+d*(1-a)/b 1
+  
+  m2)
+    1 b
+    0 1
+
+  m1)
+    1        0
+    (a-1)/b  1
+    
+  After that we'll call:
+    
+    slp:=ProductOfStraightLinePrograms(Decompose2(m2),Decompose2(m1));
+  
+  And from the documentation we can see that: 
+  
+    "slp_1 and slp_2 must be two slps that return a single element with the same number of inputs. This function constructs an slp that returns the product of the two results the slps slp_1 and slp_2 would produce with the same input."
+    
+  After that we'll call again:
+  
+    slp:=ProductOfStraightLinePrograms(Decompose2(m3),slp);
+    
+  And hence, we can conclude that our result is the product of those 3 slp's, that actually will calculate the same function "Decompose2" for m1,m2 and m3, which are upper and lower triangular matrices, that are covered in 1st and 2nd case.
