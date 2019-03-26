@@ -1,8 +1,8 @@
-Decompose2 := function(m)
-     local f, q, d, z, k, basis, coeff, slps, slp, SLP;
+Decompose2 := function(m,q)
+     local f, d, z, k, basis, coeff, slps, slp, SLP;
 
-     f := DefaultFieldOfMatrix(m); # Finite field of the matrix
-     q := Size(f); # q = p^d which is the size of the finite field
+     f := GF(q); #DefaultFieldOfMatrix(m); # Finite field of the matrix
+     #q := Size(f); # q = p^d which is the size of the finite field
      d := Size(GaloisGroup(f)); # d from q = p^d
      z := Z(q); # Primitive element of the finite field
 
@@ -45,6 +45,8 @@ Decompose2 := function(m)
                     SLP := ProductOfStraightLinePrograms(slps[k-1],slps[k]);
                elif k >= 3 then
                     SLP := ProductOfStraightLinePrograms(SLP,slps[k]);
+               else 
+                    SLP := slps[1]; 
                fi;
           od;
           return SLP;
