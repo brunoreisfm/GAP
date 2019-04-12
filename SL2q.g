@@ -6,7 +6,7 @@ Decompose2 := function(m,q)
      d := Size(GaloisGroup(f)); # d from q = p^d
      z := Z(q); # Primitive element of the finite field
 
-     if IntFFE(m[1][1]) = 1 and IntFFE(m[2][2]) = 1 and IntFFE(m[2][1]) = 0 then
+     if IsUpperTriangularMat(m) then
           # First case: [[1,a],[0,1]]
           # For that we're assuming that z^0, z^2 , ... , z^(d-1) is a basis,
           # therefore a = a_0 z^0 + a_2 z^2 + ...
@@ -45,8 +45,52 @@ Decompose2 := function(m,q)
                     SLP := ProductOfStraightLinePrograms(slps[k-1],slps[k]);
                elif k >= 3 then
                     SLP := ProductOfStraightLinePrograms(SLP,slps[k]);
-               else 
-                    SLP := slps[1]; 
+               else
+                    SLP := slps[1];
+               fi;
+          od;
+          return SLP;
+     elif IsLowerTriangularMat(m) then
+          # First case: [[1,a],[0,1]]
+          # For that we're assuming that z^0, z^2 , ... , z^(d-1) is a basis,
+          # therefore a = a_0 z^0 + a_2 z^2 + ...
+
+          # Creating the basis
+          basis := [];
+          k := 0;
+          while k < d do
+               Append(basis,[z^(2*k)]);
+               k := k + 1;
+          od;
+          basis := Basis(f,basis);
+
+          # Returning the coefficients of m[2][1] in that base
+          coeff := Coefficients(basis,m[2][1]);
+
+          # Computing slps to produce the product at the end
+          slps := [];
+          k := 0;
+          while k < d do
+               slp := StraightLineProgram([ [[3,k,2,1,3,-k],4], [[4,IntFFE(coeff[k+1])],5], [1,1,5,-1,1,-1] ],3);
+               # Each SLP return the operations in the genererators to get a matrix as it follows
+               # 1 coeff * Z^(2k)
+               # 0 1
+
+               Append(slps,[slp]); # Append slp to array os slps
+
+               k := k + 1;
+
+               # Here we'll start getting slp products. Why does it work?
+               # 1                0  *  1                    0  =>    1                                         0
+               # coeff_1 * Z^(2k) 1     coeff_2 * Z^(2(k+1)) 1        (coeff_1 * Z^(2k) + coeff_2 * Z^(2(k+1))) 1
+               # Since we're assuming that z^0 , z^2, ... z^2(d-1) is a basis we get that
+               # m[2][1] = coeff_1 * Z^(2k) + coeff_2 * Z^(2(k+1)) + ... + coeff_d-1 * Z^(2(k+d-1))
+               if k = 2 then
+                    SLP := ProductOfStraightLinePrograms(slps[k-1],slps[k]);
+               elif k >= 3 then
+                    SLP := ProductOfStraightLinePrograms(SLP,slps[k]);
+               else
+                    SLP := slps[1];
                fi;
           od;
           return SLP;
