@@ -127,7 +127,7 @@ TestCases := function(l)
      local i, m, q, a, good, bad;
 
      i := 0;
-     q := Primes(Random([1..20]))^Random([1..10]);
+     q := Primes[Random([1..20])]^Random([1..10]);
 
      good := 0;
      bad := 0;
