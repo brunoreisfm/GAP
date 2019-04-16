@@ -1,13 +1,13 @@
 Decompose2 := function(m,q)
-     local f, d, z, k, basis, coeff, slps, slp, SLP;
+     local f, d, z, k, m1, m2, m3, basis, coeff, slps, slp, SLP;
 
      f := GF(q); #DefaultFieldOfMatrix(m); # Finite field of the matrix
      #q := Size(f); # q = p^d which is the size of the finite field
      d := Size(GaloisGroup(f)); # d from q = p^d
      z := Z(q); # Primitive element of the finite field
 
-     if IsUpperTriangularMat(m) then
-          # First case: [[1,a],[0,1]]
+     # First case: [[1,a],[0,1]]
+     if m[1][1] = One(f) and m[2][1] = Zero(f) and m[2][2] = One(f) then
           # For that we're assuming that z^0, z^2 , ... , z^(d-1) is a basis,
           # therefore a = a_0 z^0 + a_2 z^2 + ...
 
@@ -50,8 +50,8 @@ Decompose2 := function(m,q)
                fi;
           od;
           return SLP;
-     elif IsLowerTriangularMat(m) then
-          # First case: [[1,a],[0,1]]
+     # Second case: [[1,a],[0,1]]
+     elif m[1][1] = One(f) and m[1][2] = Zero(f) and m[2][2] = One(f) then
           # For that we're assuming that z^0, z^2 , ... , z^(d-1) is a basis,
           # therefore a = a_0 z^0 + a_2 z^2 + ...
 
@@ -94,8 +94,22 @@ Decompose2 := function(m,q)
                fi;
           od;
           return SLP;
+     # Third case: [[a,b],[c,d]] with b != 0
+     elif m[1][2] <> Zero(f) then
+          m3:=[[1,0],[(m[2][1]+m[2][2]*(One(f)-m[1][1])/m[1][2]),1]]*One(f);
+          m2:=[[1,m[1][2]],[0,1]]*One(f);
+          m1:=[[1,0],[(m[1][1]-One(f))/m[1][2],1]]*One(f);
+
+          slp:=ProductOfStraightLinePrograms(Decompose2(m2,q),Decompose2(m1,q));
+          SLP:=ProductOfStraightLinePrograms(Decompose2(m3,q),slp);
+
+          return SLP;
+     # Fourth case: [[a,b],[c,d]] with b == 0
      else
-          Display("\nThat decomposition has not been implemented yet\n");
+          m1:=[[0,1],[-1,0]]*One(f)^0;
+          m:=m*m1;
+          slp:=ProductOfStraightLinePrograms(Decompose2(m,q),Decompose2(Inverse(m1),q));
+          return slp;
      fi;
 end;
 
