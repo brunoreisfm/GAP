@@ -122,3 +122,32 @@ ClassicalStandardGenerators := function(m)
      D := [[z,0],[0,z^-1]]*z^0;
      return [S,T,D];
 end;
+
+TestCases := function(l)
+     local i, m, q, a, good, bad;
+
+     i := 0;
+     q := Random([1..20])^Random([1..10]);
+
+     good := 0;
+     bad := 0;
+
+     while i < l do
+          m := Random(SL(2,q));
+          r := Decompose2(m,q);
+          gens := ClassicalStandardGenerators(m);
+          a := ResultOfStraightLineProgram(r,gens);
+
+          if (a = m) then
+               good := good + 1;
+          else
+               bad := bad + 1;
+          fi;
+
+          i := i + 1;
+
+     od;
+     
+     Print("q = ",q,"\n");
+     Print("In a total of ",l," test cases, ",good, " were good and ",bad," were bad");
+end;
